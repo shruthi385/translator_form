@@ -1,0 +1,110 @@
+/* Global styling for the form and modal */
+
+body {
+    background-color: #f6f7fa;  /* Light blue-grey background */
+    font-family: 'Arial', sans-serif;
+    color: #f5f3f3;
+}
+
+h1 {
+    color: #fdfcfc;  /* Darker shade for the title */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Styling the form container */
+.container {
+    background-color: #a172f7;  /* White background for the form */
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgb(77, 131, 239);
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Styling form labels */
+.form-group label {
+    font-size: 1.1rem;
+    font-weight: bolder;
+    color: #0c0c0c; /* Dark grey label color */
+}
+
+/* Styling form input fields */
+.form-control {
+    font-size: 1rem;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #3498db;  /* Light blue border when focused */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Print button styling */
+button#printBtn {
+    background-color: #4646f6;  /* Blue button */
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button#printBtn:hover {
+    background-color: #0c0c0c; /* Darker blue on hover */
+}
+
+/* Modal styling */
+.modal-header {
+    background-color: #1b1c1c; /* Darker modal header */
+    color: #fff;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+}
+
+.modal-footer button {
+    font-size: 1rem;
+}
+
+/* Button inside modal */
+button#confirmPrint {
+    background-color: #27ae60;  /* Green button */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+button#confirmPrint:hover {
+    background-color: #219150;  /* Darker green on hover */
+}
+
+/* Print styles */
+@media print {
+    /* Hide the print button and modal when printing */
+    #printBtn, #languageModal {
+        display: none;
+    }
+
+    /* Optional: adjust padding or margins for better print layout */
+    body {
+        background-color: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+}

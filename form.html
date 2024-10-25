@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translate & Print Form</title>
+    <link rel="stylesheet" href="static/css/styles.css"> 
+    <!-- Bootstrap CSS (for modal) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Form to Translate and Print</h1>
+        <form id="printForm">
+            <div class="form-group">
+                <label for="nameInput">Name</label>
+                <input type="text" id="nameInput" class="form-control" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label for="emailInput">Email</label>
+                <input type="email" id="emailInput" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="addressInput">Address</label>
+                <textarea id="addressInput" class="form-control" rows="3" placeholder="Enter your address" required></textarea>
+            </div>
+            <button type="button" id="printBtn" class="btn btn-primary">Print</button>
+        </form>
+    </div>
+
+    <!-- Language Selection Modal -->
+    <div class="modal fade" id="languageModal" tabindex="-1" role="dialog" aria-labelledby="languageModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="languageModalLabel">Select Language to Print</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:rgb(252, 252, 252);">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label>
+                            <input type="radio" name="language" value="ta-LK" required> Tamil
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="radio" name="language" value="hi-IN" required> Hindi
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="confirmPrint" class="btn btn-success">Confirm & Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript (Bootstrap, Fetch API, Modal and Print functionality) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Event listener for the Print button
+        document.getElementById("printBtn").addEventListener("click", () => {
+            // Show the modal to select the print language
+            $("#languageModal").modal("show");
+        });
+
+        // Confirm Print button inside the modal
+        document.getElementById("confirmPrint").addEventListener("click", () => {
+            // Get the selected language (Tamil or Hindi)
+            const selectedLanguage = document.querySelector('input[name="language"]:checked').value;
+
+            // Close the modal
+            $("#languageModal").modal("hide");
+
+            // Translate the form and print
+            translateAndPrint(selectedLanguage);
+        });
+
+        // Function to translate and print the page
+        function translateAndPrint(targetLang) {
+            const name = document.getElementById("nameInput").value.trim();
+            const email = document.getElementById("emailInput").value.trim();
+            const address = document.getElementById("addressInput").value.trim();
+
+            if (!name || !email || !address) {
+                alert('Please fill out all fields before printing.');
+                return;
+            }
+
+            // Prepare the content for translation
+            const formattedText = `Name: ${name}\nEmail: ${email}\nAddress: ${address}`;
+            const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(formattedText)}&langpair=en-GB|${targetLang}`;
+
+            // Translate the content using the API
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    // Manually translate the labels
+                    let translatedNameLabel, translatedEmailLabel, translatedAddressLabel;
+                    if (targetLang === "ta-LK") {
+                        translatedNameLabel = "பெயர்";
+                        translatedEmailLabel = "மினஞ்சல்";
+                        translatedAddressLabel = "முகவரி";
+                    } else if (targetLang === "hi-IN") {
+                        translatedNameLabel = "नाम";
+                        translatedEmailLabel = "ईमेल";
+                        translatedAddressLabel = "पता";
+                    }
+
+                    // Replace the labels with the translated versions
+                    document.querySelector('label[for="nameInput"]').textContent = translatedNameLabel;
+                    document.querySelector('label[for="emailInput"]').textContent = translatedEmailLabel;
+                    document.querySelector('label[for="addressInput"]').textContent = translatedAddressLabel;
+
+                    // Replace the original content with the translated content
+                    const translatedText = data.responseData.translatedText;
+
+                    // Split the translated text by lines and update the form fields
+                    const [translatedName, translatedEmail, translatedAddress] = translatedText.split("\n");
+                    document.getElementById("nameInput").value = translatedName.split(":")[1].trim();
+                    document.getElementById("emailInput").value = translatedEmail.split(":")[1].trim();
+                    document.getElementById("addressInput").value = translatedAddress.split(":")[1].trim();
+
+                    // Open the print dialog
+                    window.print();
+                })
+                .catch(error => {
+                    console.error('Translation API error:', error);
+                    alert('Error occurred during translation. Please try again.');
+                });
+        }
+    </script>
+</body>
+</html>
